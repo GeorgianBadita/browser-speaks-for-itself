@@ -51,6 +51,19 @@ export abstract class RedirectMappersUtils {
       ),
     tw: (command: Command, query: string, locale = "com"): URL =>
       genericMapperFunk(command, "/search?term=", query, locale),
+    lc: (command: Command, query: string, locale = "com"): URL => {
+      const domain = commandsToDomains[command];
+      let urlString = `https://www.${domain}.${locale}/problemset`;
+      const lowerQuery = query.toLocaleLowerCase();
+      if (
+        lowerQuery === "easy" || lowerQuery === "medium" ||
+        lowerQuery === "hard"
+      ) {
+        urlString =
+          `${urlString}/algorithms/?difficulty=${query.toUpperCase()}&status=NOT_STARTED`;
+      }
+      return new URL(urlString);
+    },
     wa: (command: Command, query: string, locale = "com") =>
       programOpenerMapperFunk(command, query, locale),
     vc: (command: Command, query: string, locale = "com") =>

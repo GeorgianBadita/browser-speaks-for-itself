@@ -36,6 +36,5 @@ Its functionality is really easy. Let's say you want to search for something on 
 | tw   | [query]        |If no query is provided, will redirect to https://www.twitch.tv, otherwise https://www.twitch.tv/search?term=[query] |
 | cal   | -        |Redirects to https://calendar.google.com |
 | mt   | -        |Redirects to https://meet.google.com |
+| lc   |[easy|medium|hard]|If no difficulty is provided, redirects to https://www.leetcode.com/problemset/all/, otherwise redirects to the problems with specified difficulty |
 | DEFAULT   | -        |Redirects to https://www.google.com |
-
-
