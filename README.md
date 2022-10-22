@@ -11,10 +11,10 @@ This is a small tool that I created to increase productivity while browsing, sim
 Its functionality is really easy. Let's say you want to search for something on youtube. Normally, you'd type 'youtube' in the search bar, then in youtube's own search you'd type the tile of the video you want. Using  ```browser-speaks-for-itself```, you'd just type ```yt [video title]``` and you will be directly redirected to the youtube search result page.
 
 ## How to run
-Command to run the app: ```deno --allow-net run server.ts```
-
-All you need to do is deploy this app somewhere, or run it locally and point your browser default search engine to it, as shown [here](https://support.google.com/chrome/answer/95426?hl=en-GB&co=GENIE.Platform%3DDesktop)
-
+1. Add an env variable called `ACCESS_KEY`, to make sure you're the only one using the app.
+2. Deploy the app (recommend deno deploy) or run it locally. Command to run the app: ```deno --allow-net --allow-env run server.ts```
+3. Change your default Chrome search engine to ```https://www.your_deploy.com/search?q=%s&key=[ACCESS_KEY]```, using this [guide](https://support.google.com/chrome/answer/95426?hl=en-GB&co=GENIE.Platform%3DDesktop).
+4. Profit.
 
 ## Supported commands
 
