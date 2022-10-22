@@ -44,6 +44,16 @@ const doRedirect = (url: string | URL, ctx: any): void => {
 router.get("/search", (ctx) => {
   const params = getQuery(ctx, { mergeParams: true });
   const query = params["q"] ?? "";
+  const key = params["key"] ?? "";
+
+  if (key.length === 0 || key != Deno.env.get("ACCESS_KEY")) {
+    // Rickroll
+    doRedirect(
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
+      ctx,
+    );
+    return;
+  }
 
   const split = query.split(" ");
   if (split.length == 0 || query.length == 0) {
