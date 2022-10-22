@@ -14,13 +14,14 @@ export enum Domains {
   GOOGLE_MEET = "meet",
   REDDIT = "reddit",
   TWITCH = "twitch",
+  NETFLIX = "netflix",
 }
 
 const ALL_COMMANDS = [
   "fb",
   "g",
   "yt",
-  "am",
+  "amz",
   "wa",
   "vc",
   "gh",
@@ -32,6 +33,7 @@ const ALL_COMMANDS = [
   "tw",
   "cal",
   "mt",
+  "nf",
 ] as const;
 
 type CommandsTuple = typeof ALL_COMMANDS;
@@ -41,7 +43,7 @@ export const commandsToDomains: { [key in Command]: Domains } = {
   "fb": Domains.FACEBOOK,
   "yt": Domains.YOUTUBE,
   "g": Domains.GOOGLE,
-  "am": Domains.AMAZON,
+  "amz": Domains.AMAZON,
   "wa": Domains.WHATSAPP,
   "vc": Domains.VSCODE,
   "gh": Domains.GITHUB,
@@ -53,6 +55,7 @@ export const commandsToDomains: { [key in Command]: Domains } = {
   "tw": Domains.TWITCH,
   "cal": Domains.GOOGLE_CALENDAR,
   "mt": Domains.GOOGLE_MEET,
+  "nf": Domains.NETFLIX,
 };
 
 export const commandFromString = (command: string): Command | null => {
