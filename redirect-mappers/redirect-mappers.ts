@@ -32,10 +32,10 @@ export abstract class RedirectMappersUtils {
       genericMapperFunk(command, "/search?q=", query, locale),
     yt: (command: Command, query: string, locale = "com"): URL =>
       genericMapperFunk(command, "/results?search_query=", query, locale),
-    amz: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/search?q=", query, locale),
-    nf: (command: Command, query: string, locale = "co.uk"): URL =>
+    amz: (command: Command, query: string, locale = "co.uk"): URL =>
       genericMapperFunk(command, "/s?k=", query, locale),
+    nf: (command: Command, query: string, locale = "com"): URL =>
+      genericMapperFunk(command, "/search?q=", query, locale),
     gh: (command: Command, query: string, locale = "com"): URL =>
       genericMapperFunk(command, "/search?q=", query, locale),
     rd: (command: Command, query: string, locale = "com"): URL =>
