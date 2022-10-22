@@ -46,7 +46,7 @@ router.get("/search", (ctx) => {
   const query = params["q"] ?? "";
   const key = params["key"] ?? "";
 
-  if (key.length === 0 || key != Deno.env.get("ACCESS_KEY")) {
+  if (key.length === 0 || key !== Deno.env.get("ACCESS_KEY")) {
     // Rickroll
     doRedirect(
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
