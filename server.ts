@@ -75,7 +75,11 @@ router.get("/search", (ctx) => {
   doRedirect(url, ctx);
   return;
 }).get("/", (ctx) => {
-  doRedirect("https://www.google.com", ctx);
+  // Rickroll
+  doRedirect(
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
+    ctx,
+  );
   return;
 });
 
