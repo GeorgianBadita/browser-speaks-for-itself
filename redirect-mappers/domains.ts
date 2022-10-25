@@ -16,6 +16,7 @@ export enum Domains {
   TWITCH = "twitch",
   NETFLIX = "netflix",
   LEETCODE = "leetcode",
+  STACKOVERFLOW = "stackoverflow",
 }
 
 const ALL_COMMANDS = [
@@ -36,6 +37,7 @@ const ALL_COMMANDS = [
   "mt",
   "nf",
   "lc",
+  "so",
 ] as const;
 
 type CommandsTuple = typeof ALL_COMMANDS;
@@ -59,6 +61,7 @@ export const commandsToDomains: { [key in Command]: Domains } = {
   "mt": Domains.GOOGLE_MEET,
   "nf": Domains.NETFLIX,
   "lc": Domains.LEETCODE,
+  "so": Domains.STACKOVERFLOW,
 };
 
 export const commandFromString = (command: string): Command | null => {

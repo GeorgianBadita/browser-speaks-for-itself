@@ -51,6 +51,8 @@ export abstract class RedirectMappersUtils {
       ),
     tw: (command: Command, query: string, locale = "com"): URL =>
       genericMapperFunk(command, "/search?term=", query, locale),
+    so: (command: Command, query: string, locale = "com"): URL =>
+      genericMapperFunk(command, "/search?q=", query, locale),
     lc: (command: Command, query: string, locale = "com"): URL => {
       const domain = commandsToDomains[command];
       let urlString = `https://www.${domain}.${locale}/problemset`;
