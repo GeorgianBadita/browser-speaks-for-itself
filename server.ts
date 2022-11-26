@@ -19,6 +19,7 @@
 // | cal     |    -             | Redirects to https://calendar.google.com                                                                                                                                               |
 // | mt      |    -             | Redirects to https://meet.google.com                                                                                                                                                   |
 // | lc      |[easy|medium|hard]| If no difficulty is provided, redirects to https://www.leetcode.com/problemset/all/, otherwise redirects to the problems with specified difficulty                                     |
+// | so      | [query]          | If no query is provided, redirects to https://www.stackoverflow.com, otherwise redirects to https://stackoverflow.com/search?q=[query]                                                 |
 // | DEFAULT |    -             | Redirects to https://www.google.com                                                                                                                                                    |
 // +---------+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
@@ -42,47 +43,49 @@ const doRedirect = (url: string | URL, ctx: any): void => {
   ctx.response.redirect(url);
 };
 
-router.get("/search", (ctx) => {
-  const params = getQuery(ctx, { mergeParams: true });
-  const query = params["q"] ?? "";
-  const key = params["key"] ?? "";
+router
+  .get("/search", (ctx) => {
+    const params = getQuery(ctx, { mergeParams: true });
+    const query = params["q"] ?? "";
+    const key = params["key"] ?? "";
 
-  if (key.length === 0 || key !== Deno.env.get("ACCESS_KEY")) {
+    if (key.length === 0 || key !== Deno.env.get("ACCESS_KEY")) {
+      // Rickroll
+      doRedirect(
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
+        ctx
+      );
+      return;
+    }
+
+    const split = query.split(" ");
+    if (split.length == 0 || query.length == 0) {
+      doRedirect("https://www.google.com", ctx);
+      return;
+    }
+
+    // TODO: Redo this whole function as it is a bit hacky
+    let redirectFunk = RedirectMappersUtils.getReidrectfunk(split[0]);
+    let command = "g" as Command;
+    if (redirectFunk === null) {
+      redirectFunk = RedirectMappersUtils.getReidrectfunk(command);
+    } else {
+      command = split[0] as Command;
+      split.shift();
+    }
+
+    const url = (redirectFunk as RedirectMapper)(command, split.join(" "));
+    doRedirect(url, ctx);
+    return;
+  })
+  .get("/", (ctx) => {
     // Rickroll
     doRedirect(
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
-      ctx,
+      ctx
     );
     return;
-  }
-
-  const split = query.split(" ");
-  if (split.length == 0 || query.length == 0) {
-    doRedirect("https://www.google.com", ctx);
-    return;
-  }
-
-  // TODO: Redo this whole function as it is a bit hacky
-  let redirectFunk = RedirectMappersUtils.getReidrectfunk(split[0]);
-  let command = "g" as Command;
-  if (redirectFunk === null) {
-    redirectFunk = RedirectMappersUtils.getReidrectfunk(command);
-  } else {
-    command = split[0] as Command;
-    split.shift();
-  }
-
-  const url = (redirectFunk as RedirectMapper)(command, split.join(" "));
-  doRedirect(url, ctx);
-  return;
-}).get("/", (ctx) => {
-  // Rickroll
-  doRedirect(
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
-    ctx,
-  );
-  return;
-});
+  });
 
 const app = new Application();
 
