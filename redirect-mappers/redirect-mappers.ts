@@ -1,89 +1,125 @@
-import { Command, commandFromString, commandsToDomains } from "./domains.ts";
+import { Command, commandFromString, commandsToWebsites } from "./websites.ts";
 
-export interface RedirectMapper {
-  (command: Command, query: string): URL;
-}
+type MappingWithQuery = {
+  fn: (input: string) => URL;
+  withQuery: true;
+};
+
+type MappingSimple = {
+  fn: () => URL;
+  withQuery: false;
+};
+
+export type RedirectMapper = MappingWithQuery | MappingSimple;
 
 const genericMapperFunk = (
   command: Command,
   afterDomain: string,
   search: string,
-  locale: string,
+  tld: string
 ) => {
-  const domain = commandsToDomains[command];
-  let urlString = `https://www.${domain}.${locale}`;
+  const domain = commandsToWebsites[command];
+  let urlString = `https://www.${domain}.${tld}`;
   if (search.length > 0) {
     urlString = `${urlString}${afterDomain}${search}`;
   }
   return new URL(urlString);
 };
 
-const programOpenerMapperFunk = (
-  command: Command,
-  _search: string,
-  _locale: string,
-) => new URL(`${commandsToDomains[command]}://`);
+const programOpenerMapperFunk = (command: Command) =>
+  new URL(`${commandsToWebsites[command]}://`);
 
 export abstract class RedirectMappersUtils {
   private static MAPPERS: { [key in Command]: RedirectMapper } = {
-    fb: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/search/top?q=", query, locale),
-    g: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/search?q=", query, locale),
-    yt: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/results?search_query=", query, locale),
-    amz: (command: Command, query: string, locale = "co.uk"): URL =>
-      genericMapperFunk(command, "/s?k=", query, locale),
-    nf: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/search?q=", query, locale),
-    gh: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/search?q=", query, locale),
-    rd: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/search?q=", query, locale),
-    ddd: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/?q=", query, locale),
-    ig: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(
-        command,
-        "/explore/search/keyword/?q=",
-        query,
-        locale,
-      ),
-    tw: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/search?term=", query, locale),
-    so: (command: Command, query: string, locale = "com"): URL =>
-      genericMapperFunk(command, "/search?q=", query, locale),
-    lc: (command: Command, query: string, locale = "com"): URL => {
-      const domain = commandsToDomains[command];
-      let urlString = `https://www.${domain}.${locale}/problemset`;
-      const lowerQuery = query.toLocaleLowerCase();
-      if (
-        lowerQuery === "easy" || lowerQuery === "medium" ||
-        lowerQuery === "hard"
-      ) {
-        urlString =
-          `${urlString}/algorithms/?difficulty=${query.toUpperCase()}&status=NOT_STARTED`;
-      }
-      return new URL(urlString);
+    fb: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("fb", "/search/top?q=", query, tld),
+      withQuery: true,
     },
-    wa: (command: Command, query: string, locale = "com") =>
-      programOpenerMapperFunk(command, query, locale),
-    vc: (command: Command, query: string, locale = "com") =>
-      programOpenerMapperFunk(command, query, locale),
-    gm: (_command: Command, _query: string, _locale = "com") =>
-      new URL("https://www.gmail.com"),
-    gd: (_command: Command, _query: string, _locale = "com") =>
-      new URL("https://drive.google.com"),
-    cal: (_command: Command, _query: string, _locale = "com") =>
-      new URL("https://calendar.google.com"),
-    mt: (_command: Command, _query: string, _locale = "com") =>
-      new URL("https://meet.google.com"),
+    g: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("g", "/search?q=", query, tld),
+      withQuery: true,
+    },
+    yt: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("yt", "/results?search_query=", query, tld),
+      withQuery: true,
+    },
+    amz: {
+      fn: (query: string, tld = "co.uk"): URL =>
+        genericMapperFunk("amz", "/s?k=", query, tld),
+      withQuery: true,
+    },
+    nf: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("nf", "/search?q=", query, tld),
+      withQuery: true,
+    },
+    gh: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("gh", "/search?q=", query, tld),
+      withQuery: true,
+    },
+    rd: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("rd", "/search?q=", query, tld),
+      withQuery: true,
+    },
+    ddd: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("ddd", "/?q=", query, tld),
+      withQuery: true,
+    },
+    ig: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("ig", "/explore/search/keyword/?q=", query, tld),
+      withQuery: true,
+    },
+    tw: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("tw", "/search?term=", query, tld),
+      withQuery: true,
+    },
+    so: {
+      fn: (query: string, tld = "com"): URL =>
+        genericMapperFunk("so", "/search?q=", query, tld),
+      withQuery: true,
+    },
+    lc: {
+      fn: (query: string, tld = "com"): URL => {
+        const domain = commandsToWebsites["lc"];
+        const urlString = `https://www.${domain}.${tld}/problemset`;
+        const lowerQuery = query.toLowerCase();
+        if (
+          lowerQuery === "easy" ||
+          lowerQuery === "medium" ||
+          lowerQuery === "hard"
+        ) {
+          return new URL(
+            `${urlString}/algorithms/?difficulty=${query.toUpperCase()}&status=NOT_STARTED`
+          );
+        }
+        return new URL(urlString);
+      },
+      withQuery: true,
+    },
+    wa: { fn: () => programOpenerMapperFunk("wa"), withQuery: false },
+    vc: { fn: () => programOpenerMapperFunk("vc"), withQuery: false },
+    gm: { fn: () => new URL("https://www.gmail.com"), withQuery: false },
+    gd: { fn: () => new URL("https://drive.google.com"), withQuery: false },
+    cal: { fn: () => new URL("https://calendar.google.com"), withQuery: false },
+    mt: { fn: () => new URL("https://meet.google.com"), withQuery: false },
   };
 
-  static getReidrectfunk = (
-    commString: string,
-  ): RedirectMapper | null => {
+  private static DEFAULT_CMD: Command = "g";
+
+  static getReidrectfunk = (commString: string): RedirectMapper | null => {
     const command = commandFromString(commString);
     return command === null ? command : RedirectMappersUtils.MAPPERS[command];
+  };
+
+  static getDefaultRedirectfunk = (): RedirectMapper => {
+    return RedirectMappersUtils.MAPPERS[RedirectMappersUtils.DEFAULT_CMD];
   };
 }

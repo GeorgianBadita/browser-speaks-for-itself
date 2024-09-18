@@ -22,23 +22,18 @@
 // | so      | [query]          | If no query is provided, redirects to https://www.stackoverflow.com, otherwise redirects to https://stackoverflow.com/search?q=[query]                                                 |
 // | DEFAULT |    -             | Redirects to https://www.google.com                                                                                                                                                    |
 // +---------+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-
-import { getQuery } from "https://deno.land/x/oak@v11.0.0/helpers.ts";
+import { getQuery } from "https://deno.land/x/oak@v15.0.0/helpers.ts";
 import {
   Application,
+  Context,
   Router,
   Status,
-} from "https://deno.land/x/oak@v11.0.0/mod.ts";
-import { Command } from "./redirect-mappers/domains.ts";
-import {
-  RedirectMapper,
-  RedirectMappersUtils,
-} from "./redirect-mappers/redirect-mappers.ts";
+} from "https://deno.land/x/oak@v15.0.0/mod.ts";
+import { RedirectMappersUtils } from "./redirect-mappers/redirect-mappers.ts";
 
 const router = new Router();
 
-// deno-lint-ignore no-explicit-any
-const doRedirect = (url: string | URL, ctx: any): void => {
+const doRedirect = (url: string | URL, ctx: Context): void => {
   ctx.response.status = Status.Found;
   ctx.response.redirect(url);
 };
@@ -64,17 +59,16 @@ router
       return;
     }
 
-    // TODO: Redo this whole function as it is a bit hacky
-    let redirectFunk = RedirectMappersUtils.getReidrectfunk(split[0]);
-    let command = "g" as Command;
-    if (redirectFunk === null) {
-      redirectFunk = RedirectMappersUtils.getReidrectfunk(command);
-    } else {
-      command = split[0] as Command;
-      split.shift();
-    }
+    const [maybeCommand, ...rest] = split;
 
-    const url = (redirectFunk as RedirectMapper)(command, split.join(" "));
+    let redirectFunk =
+      RedirectMappersUtils.getReidrectfunk(maybeCommand) ??
+      RedirectMappersUtils.getDefaultRedirectfunk();
+
+    const url = redirectFunk.withQuery
+      ? redirectFunk.fn(encodeURI(rest.join(" ")))
+      : redirectFunk.fn();
+
     doRedirect(url, ctx);
     return;
   })
