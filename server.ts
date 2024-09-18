@@ -61,9 +61,16 @@ router
 
     const [maybeCommand, ...rest] = split;
 
-    let redirectFunk =
-      RedirectMappersUtils.getReidrectfunk(maybeCommand) ??
-      RedirectMappersUtils.getDefaultRedirectfunk();
+    let redirectFunk = RedirectMappersUtils.getReidrectfunk(maybeCommand);
+
+    if (redirectFunk === null) {
+      const defRedirect = RedirectMappersUtils.getDefaultRedirectfunk();
+      const url = defRedirect.withQuery
+        ? defRedirect.fn(encodeURI(split.join(" ")))
+        : defRedirect.fn();
+      doRedirect(url, ctx);
+      return;
+    }
 
     const url = redirectFunk.withQuery
       ? redirectFunk.fn(encodeURI(rest.join(" ")))
